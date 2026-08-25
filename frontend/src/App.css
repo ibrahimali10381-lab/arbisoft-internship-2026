@@ -1,0 +1,270 @@
+:root {
+  color: #15202b;
+  background:
+    radial-gradient(circle at top left, rgba(34, 122, 112, 0.18), transparent 40%),
+    linear-gradient(160deg, #f4f7f6 0%, #e7eef0 45%, #f7f3ea 100%);
+  font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: grid;
+  place-items: center;
+  background: #1f6f68;
+  color: #f4fffd;
+  font-weight: 700;
+}
+
+.brand-name {
+  margin: 0;
+  font-weight: 700;
+}
+
+.brand-sub {
+  margin: 0;
+  color: #5b6b73;
+  font-size: 0.85rem;
+}
+
+.nav {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.nav a {
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  color: #35525a;
+}
+
+.nav a.active {
+  background: #1f6f68;
+  color: #fff;
+}
+
+.page h1 {
+  margin: 0.25rem 0 0.75rem;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1.15;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: #1f6f68;
+  font-weight: 700;
+}
+
+.lede {
+  margin: 0 0 1.25rem;
+  max-width: 40rem;
+  color: #40545c;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.button {
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button.primary {
+  background: #1f6f68;
+  color: #fff;
+}
+
+.button.ghost {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #c9d7db;
+}
+
+.button.danger {
+  background: #fff1f0;
+  color: #9b2c2c;
+  border-color: #f0c7c4;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.stat-row div {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #d5e1e4;
+  border-radius: 0.9rem;
+  padding: 0.9rem 1rem;
+}
+
+.stat-row dt {
+  color: #5b6b73;
+  font-size: 0.85rem;
+}
+
+.stat-row dd {
+  margin: 0.2rem 0 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.note-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.note-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid #d5e1e4;
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+}
+
+.note-card h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+}
+
+.note-card p {
+  margin: 0;
+}
+
+.meta {
+  margin-top: 0.65rem !important;
+  color: #5b6b73;
+  font-size: 0.85rem;
+}
+
+.narrow {
+  max-width: 34rem;
+}
+
+.note-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1px solid #c9d7db;
+  border-radius: 0.7rem;
+  padding: 0.7rem 0.8rem;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.field-error,
+.form-error,
+.banner.error {
+  color: #9b2c2c;
+  margin: 0;
+}
+
+.banner.error,
+.empty {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid #d5e1e4;
+  border-radius: 0.8rem;
+  padding: 0.85rem 1rem;
+}
+
+@media (max-width: 720px) {
+  .topbar,
+  .section-head,
+  .note-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stat-row {
+    grid-template-columns: 1fr;
+  }
+}
