@@ -187,7 +187,9 @@ def test_integration_happy_path_auth_crud(client: TestClient) -> None:
     assert client.delete(f"/api/notes/{note_id}", headers=headers).status_code == 204
 
 
-def test_research_agent_uses_memory(client: TestClient) -> None:
+def test_research_agent_uses_memory(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("SERPAPI_API_KEY", raising=False)
+
     token = _register(client, "frank", "frank@example.com").json()["access_token"]
     headers = _auth_header(token)
     session_id = "test-session"

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app import models, schemas
 from app.agent import research_agent
@@ -13,7 +13,14 @@ def run_research(
     payload: schemas.AgentResearchRequest,
     _: models.User = Depends(get_current_user),
 ) -> schemas.AgentResearchResponse:
-    result = research_agent.run(query=payload.query, session_id=payload.session_id)
+    try:
+        result = research_agent.run(query=payload.query, session_id=payload.session_id)
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=str(exc),
+        ) from exc
+
     return schemas.AgentResearchResponse(
         session_id=result.session_id,
         query=result.query,

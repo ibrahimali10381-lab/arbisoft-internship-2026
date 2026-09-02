@@ -4,8 +4,13 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
+from dotenv import load_dotenv
 from serpapi import GoogleSearch
+
+# Ensure backend/.env is loaded even if this module is imported before main.
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
 @dataclass
@@ -22,10 +27,19 @@ class SerpApiSearchSkill:
     description = "Search the public web with SerpAPI and return top organic results."
 
     def __init__(self, api_key: str | None = None) -> None:
-        self.api_key = api_key or os.getenv("SERPAPI_API_KEY", "")
+        # Keep an explicit override if provided; otherwise read env lazily in run().
+        self._api_key_override = api_key
+
+    def _resolve_api_key(self) -> str:
+        # Reload .env so key updates apply without a full process restart.
+        load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=True)
+        if self._api_key_override is not None:
+            return self._api_key_override.strip()
+        return (os.getenv("SERPAPI_API_KEY") or "").strip()
 
     def run(self, query: str, *, num: int = 5) -> list[SearchHit]:
-        if not self.api_key:
+        api_key = self._resolve_api_key()
+        if not api_key:
             # Deterministic offline fallback so local demos/tests still work.
             return [
                 SearchHit(
@@ -41,7 +55,7 @@ class SerpApiSearchSkill:
         search = GoogleSearch(
             {
                 "q": query,
-                "api_key": self.api_key,
+                "api_key": api_key,
                 "engine": "google",
                 "num": num,
             }
@@ -50,8 +64,14 @@ class SerpApiSearchSkill:
         if payload.get("error"):
             raise RuntimeError(str(payload["error"]))
 
+        organic = payload.get("organic_results") or []
+        if not organic:
+            raise RuntimeError(
+                "SerpAPI returned no organic results. Check your key, plan quota, or query."
+            )
+
         hits: list[SearchHit] = []
-        for item in payload.get("organic_results", [])[:num]:
+        for item in organic[:num]:
             hits.append(
                 SearchHit(
                     title=item.get("title") or "Untitled",

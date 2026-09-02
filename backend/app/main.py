@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -9,7 +10,7 @@ from app.models import User
 from app.routers import agent, auth, notes, users
 from app.security import hash_password
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 def seed_default_users() -> None:
