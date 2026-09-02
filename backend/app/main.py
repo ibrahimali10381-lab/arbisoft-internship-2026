@@ -1,20 +1,37 @@
 from contextlib import asynccontextmanager
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, SessionLocal, engine
 from app.models import User
-from app.routers import notes, users
+from app.routers import agent, auth, notes, users
+from app.security import hash_password
+
+load_dotenv()
 
 
-def seed_default_user() -> None:
+def seed_default_users() -> None:
     db = SessionLocal()
     try:
-        existing = db.query(User).filter(User.username == "demo").first()
-        if not existing:
-            db.add(User(username="demo", email="demo@example.com"))
-            db.commit()
+        seeds = [
+            ("demo", "demo@example.com", "demopass", "user"),
+            ("admin", "admin@example.com", "adminpass", "admin"),
+        ]
+        for username, email, password, role in seeds:
+            existing = db.query(User).filter(User.username == username).first()
+            if existing:
+                continue
+            db.add(
+                User(
+                    username=username,
+                    email=email,
+                    password_hash=hash_password(password),
+                    role=role,
+                )
+            )
+        db.commit()
     finally:
         db.close()
 
@@ -22,14 +39,14 @@ def seed_default_user() -> None:
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
-    seed_default_user()
+    seed_default_users()
     yield
 
 
 app = FastAPI(
-    title="Notes API",
-    description="CRUD REST API for the Arbisoft Internship Program 2026",
-    version="1.0.0",
+    title="NotesLab API",
+    description="Auth, notes CRUD, and SerpAPI research agent for Arbisoft Internship 2026",
+    version="2.0.0",
     lifespan=lifespan,
 )
 
@@ -41,8 +58,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(notes.router, prefix="/api")
+app.include_router(agent.router, prefix="/api")
 
 
 @app.get("/health")

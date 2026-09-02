@@ -1,11 +1,11 @@
 # Arbisoft Internship 2026 — NotesLab
 
-Full-stack notes app covering **Week 1 (Frontend Fundamentals)** and **Week 2 (Backend, REST, CRUD & ORM)** from the AI-Focused Internship Program.
+Full-stack notes app covering Weeks 1–4 of the AI-Focused Internship Program.
 
 ## Stack
 
 - **Frontend:** React + Vite + TypeScript, React Router, ESLint, Prettier, Vitest
-- **Backend:** FastAPI + SQLAlchemy + Pydantic, ruff, pytest
+- **Backend:** FastAPI + SQLAlchemy + JWT auth + SerpAPI research agent, ruff, pytest
 
 ## Quick start
 
@@ -13,11 +13,18 @@ Full-stack notes app covering **Week 1 (Frontend Fundamentals)** and **Week 2 (B
 
 ```bash
 cd backend
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+source .venv/bin/activate
+cp .env.example .env   # set SERPAPI_API_KEY for live search
+# optional: export $(grep -v '^#' .env | xargs)
 uvicorn app.main:app --reload --port 8000
 ```
 
-API docs: http://127.0.0.1:8000/docs
+Seeded users:
+
+- `demo` / `demopass` (role: user)
+- `admin` / `adminpass` (role: admin)
+
+Without `SERPAPI_API_KEY`, the research agent still runs using a demo search fallback.
 
 ### Frontend
 
@@ -27,38 +34,31 @@ npm install
 npm run dev
 ```
 
-App: http://127.0.0.1:5173
-
-A demo user (`demo` / `demo@example.com`) is seeded on API startup.
+App: http://127.0.0.1:5173 · API docs: http://127.0.0.1:8000/docs
 
 ## Checklist coverage
 
-### Week 1
+### Weeks 1–2
 
-- [x] Cursor + React/Vite setup
-- [x] SPA with 3 routes (`/`, `/notes`, `/notes/new`) and shared layout
-- [x] Form with client-side validation
-- [x] ESLint + Prettier
-- [x] 3+ unit tests (Vitest + Testing Library)
-- [x] `prompts.md` log
+SPA routes, validated forms, notes CRUD API, ORM relationship, lint + tests, `prompts.md`.
 
-### Week 2
+### Week 3
 
-- [x] CRUD REST API for Notes
-- [x] ORM models with User → Notes relationship
-- [x] Input validation + correct HTTP status codes
-- [x] Backend linter (ruff)
-- [x] AI-assisted unit tests (pytest)
+- [x] JWT authentication (`/api/auth/register`, `/login`, `/me`)
+- [x] RBAC (admin-only user list; owners/admins manage notes)
+- [x] Frontend login + authenticated end-to-end CRUD
+- [x] 5+ API tests for auth/CRUD/errors + 1 integration happy-path test
 - [x] `prompts.md` updated
+
+### Week 4
+
+- [x] Research agent with SerpAPI web-search skill
+- [x] Session memory that recalls earlier facts
+- [x] `/research` UI wired to the agent API
 
 ## Useful commands
 
 ```bash
-# Frontend
-cd frontend && npm run lint && npm run format:check && npm test && npm run build
-
-# Backend
-cd backend && source .venv/bin/activate
-ruff check .
-pytest
+cd frontend && npm run lint && npm test && npm run build
+cd backend && source .venv/bin/activate && ruff check . && pytest
 ```

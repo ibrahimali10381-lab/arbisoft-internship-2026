@@ -2,27 +2,18 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { validateNoteForm, type NoteFormErrors, type NoteFormValues } from './noteValidation'
 
 type NoteFormProps = {
-  users: Array<{ id: number; username: string }>
-  initialOwnerId?: number
   onSubmit: (values: NoteFormValues) => Promise<void> | void
   submitLabel?: string
 }
 
-export function NoteForm({
-  users,
-  initialOwnerId,
-  onSubmit,
-  submitLabel = 'Create note',
-}: NoteFormProps) {
-  const defaultOwner = initialOwnerId ?? users[0]?.id ?? 0
+export function NoteForm({ onSubmit, submitLabel = 'Create note' }: NoteFormProps) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [ownerId, setOwnerId] = useState(defaultOwner)
   const [errors, setErrors] = useState<NoteFormErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
 
-  const values = useMemo(() => ({ title, content, owner_id: ownerId }), [title, content, ownerId])
+  const values = useMemo(() => ({ title, content }), [title, content])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -39,7 +30,6 @@ export function NoteForm({
       await onSubmit({
         title: title.trim(),
         content: content.trim(),
-        owner_id: ownerId,
       })
       setTitle('')
       setContent('')
@@ -82,28 +72,6 @@ export function NoteForm({
         {errors.content ? (
           <p id="content-error" className="field-error" role="alert">
             {errors.content}
-          </p>
-        ) : null}
-      </label>
-
-      <label className="field">
-        <span>Owner</span>
-        <select
-          name="owner_id"
-          value={ownerId}
-          onChange={(event) => setOwnerId(Number(event.target.value))}
-          aria-invalid={Boolean(errors.owner_id)}
-        >
-          {users.length === 0 ? <option value={0}>No users available</option> : null}
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.username}
-            </option>
-          ))}
-        </select>
-        {errors.owner_id ? (
-          <p className="field-error" role="alert">
-            {errors.owner_id}
           </p>
         ) : null}
       </label>

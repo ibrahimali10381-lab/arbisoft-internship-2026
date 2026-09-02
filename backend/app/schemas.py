@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
@@ -6,6 +7,12 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 class UserCreate(BaseModel):
     username: str = Field(min_length=3, max_length=50)
     email: EmailStr
+    password: str = Field(min_length=6, max_length=128)
+
+
+class UserLogin(BaseModel):
+    username: str = Field(min_length=3, max_length=50)
+    password: str = Field(min_length=6, max_length=128)
 
 
 class UserRead(BaseModel):
@@ -14,7 +21,14 @@ class UserRead(BaseModel):
     id: int
     username: str
     email: EmailStr
+    role: str
     created_at: datetime
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserRead
 
 
 class NoteBase(BaseModel):
@@ -23,7 +37,7 @@ class NoteBase(BaseModel):
 
 
 class NoteCreate(NoteBase):
-    owner_id: int = Field(gt=0)
+    pass
 
 
 class NoteUpdate(BaseModel):
@@ -38,3 +52,35 @@ class NoteRead(NoteBase):
     owner_id: int
     created_at: datetime
     updated_at: datetime
+
+
+class AgentResearchRequest(BaseModel):
+    query: str = Field(min_length=2, max_length=500)
+    session_id: str = Field(min_length=1, max_length=100, default="default")
+
+
+class SearchResult(BaseModel):
+    title: str
+    link: str
+    snippet: str
+
+
+class AgentResearchResponse(BaseModel):
+    session_id: str
+    query: str
+    plan: list[str]
+    answer: str
+    sources: list[SearchResult]
+    remembered_facts: list[str]
+    memory_used: list[str]
+
+
+class AgentMemoryResponse(BaseModel):
+    session_id: str
+    facts: list[str]
+
+
+class AgentRememberRequest(BaseModel):
+    session_id: str = Field(min_length=1, max_length=100)
+    fact: str = Field(min_length=2, max_length=500)
+    kind: Literal["fact", "preference", "entity"] = "fact"

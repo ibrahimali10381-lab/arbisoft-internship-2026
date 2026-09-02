@@ -1,6 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export function Layout() {
+  const { user, logout } = useAuth()
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -15,8 +18,18 @@ export function Layout() {
           <NavLink to="/" end>
             Home
           </NavLink>
-          <NavLink to="/notes">Notes</NavLink>
-          <NavLink to="/notes/new">New Note</NavLink>
+          {user ? (
+            <>
+              <NavLink to="/notes">Notes</NavLink>
+              <NavLink to="/notes/new">New Note</NavLink>
+              <NavLink to="/research">Research</NavLink>
+              <button type="button" className="button ghost nav-button" onClick={logout}>
+                Log out ({user.username})
+              </button>
+            </>
+          ) : (
+            <NavLink to="/login">Log in</NavLink>
+          )}
         </nav>
       </header>
       <main className="page">

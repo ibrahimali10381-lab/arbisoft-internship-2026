@@ -1,13 +1,11 @@
 export type NoteFormValues = {
   title: string
   content: string
-  owner_id: number
 }
 
 export type NoteFormErrors = {
   title?: string
   content?: string
-  owner_id?: string
 }
 
 export function validateNoteForm(values: NoteFormValues): NoteFormErrors {
@@ -25,10 +23,6 @@ export function validateNoteForm(values: NoteFormValues): NoteFormErrors {
     errors.content = 'Content is required'
   } else if (values.content.trim().length < 5) {
     errors.content = 'Content must be at least 5 characters'
-  }
-
-  if (!Number.isInteger(values.owner_id) || values.owner_id <= 0) {
-    errors.owner_id = 'Select an owner'
   }
 
   return errors

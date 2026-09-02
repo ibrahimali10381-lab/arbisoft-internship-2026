@@ -4,15 +4,13 @@ import {
   createNote as apiCreateNote,
   deleteNote as apiDeleteNote,
   listNotes,
-  listUsers,
   type Note,
   type NoteInput,
-  type User,
-} from '../api/notes'
+} from '../api/client'
+import { useAuth } from './AuthContext'
 
 type NotesContextValue = {
   notes: Note[]
-  users: User[]
   loading: boolean
   error: string | null
   refresh: () => Promise<void>
@@ -23,24 +21,27 @@ type NotesContextValue = {
 const NotesContext = createContext<NotesContextValue | null>(null)
 
 export function NotesProvider({ children }: { children: ReactNode }) {
+  const { token } = useAuth()
   const [notes, setNotes] = useState<Note[]>([])
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
+    if (!token) {
+      setNotes([])
+      setError(null)
+      return
+    }
     setLoading(true)
     setError(null)
     try {
-      const [nextNotes, nextUsers] = await Promise.all([listNotes(), listUsers()])
-      setNotes(nextNotes)
-      setUsers(nextUsers)
+      setNotes(await listNotes())
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load data')
+      setError(err instanceof Error ? err.message : 'Failed to load notes')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [token])
 
   useEffect(() => {
     void refresh()
@@ -60,14 +61,13 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       notes,
-      users,
       loading,
       error,
       refresh,
       addNote,
       removeNote,
     }),
-    [notes, users, loading, error, refresh, addNote, removeNote],
+    [notes, loading, error, refresh, addNote, removeNote],
   )
 
   return <NotesContext.Provider value={value}>{children}</NotesContext.Provider>

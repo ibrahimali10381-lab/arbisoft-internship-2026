@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.agent.memory import memory_store
 from app.database import Base, get_db
 from app.main import app
 
@@ -36,90 +37,187 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
             pass
 
     app.dependency_overrides[get_db] = override_get_db
+    memory_store.clear("test-session")
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
 
 
-def test_create_and_list_notes(client: TestClient) -> None:
-    user_response = client.post(
-        "/api/users",
-        json={"username": "alice", "email": "alice@example.com"},
+def _register(client: TestClient, username: str, email: str, password: str = "secret12"):
+    return client.post(
+        "/api/auth/register",
+        json={"username": username, "email": email, "password": password},
     )
-    assert user_response.status_code == 201
-    user_id = user_response.json()["id"]
 
-    create_response = client.post(
-        "/api/notes",
-        json={
-            "title": "First note",
-            "content": "Hello from pytest",
-            "owner_id": user_id,
-        },
+
+def _auth_header(token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {token}"}
+
+
+def test_register_and_login(client: TestClient) -> None:
+    register = _register(client, "alice", "alice@example.com")
+    assert register.status_code == 201
+    assert register.json()["access_token"]
+    assert register.json()["user"]["role"] == "user"
+
+    bad_login = client.post(
+        "/api/auth/login",
+        json={"username": "alice", "password": "wrongpass"},
     )
-    assert create_response.status_code == 201
-    note = create_response.json()
-    assert note["title"] == "First note"
-    assert note["owner_id"] == user_id
+    assert bad_login.status_code == 401
 
-    list_response = client.get("/api/notes")
-    assert list_response.status_code == 200
-    assert len(list_response.json()) == 1
+    login = client.post(
+        "/api/auth/login",
+        json={"username": "alice", "password": "secret12"},
+    )
+    assert login.status_code == 200
+    assert login.json()["user"]["username"] == "alice"
 
 
-def test_get_update_delete_note(client: TestClient) -> None:
-    user_id = client.post(
-        "/api/users",
-        json={"username": "bob", "email": "bob@example.com"},
-    ).json()["id"]
+def test_notes_require_auth(client: TestClient) -> None:
+    response = client.get("/api/notes")
+    assert response.status_code == 401
 
-    note_id = client.post(
+
+def test_authenticated_note_crud(client: TestClient) -> None:
+    token = _register(client, "bob", "bob@example.com").json()["access_token"]
+    headers = _auth_header(token)
+
+    create = client.post(
         "/api/notes",
-        json={"title": "Draft", "content": "WIP", "owner_id": user_id},
-    ).json()["id"]
+        headers=headers,
+        json={"title": "First note", "content": "Hello from pytest"},
+    )
+    assert create.status_code == 201
+    note_id = create.json()["id"]
 
-    get_response = client.get(f"/api/notes/{note_id}")
-    assert get_response.status_code == 200
-    assert get_response.json()["title"] == "Draft"
+    listed = client.get("/api/notes", headers=headers)
+    assert listed.status_code == 200
+    assert len(listed.json()) == 1
 
-    update_response = client.put(
+    updated = client.put(
         f"/api/notes/{note_id}",
-        json={"title": "Published", "content": "Done"},
+        headers=headers,
+        json={"title": "Updated", "content": "Changed"},
     )
-    assert update_response.status_code == 200
-    assert update_response.json()["title"] == "Published"
+    assert updated.status_code == 200
+    assert updated.json()["title"] == "Updated"
 
-    delete_response = client.delete(f"/api/notes/{note_id}")
-    assert delete_response.status_code == 204
+    deleted = client.delete(f"/api/notes/{note_id}", headers=headers)
+    assert deleted.status_code == 204
 
-    missing = client.get(f"/api/notes/{note_id}")
+
+def test_validation_and_not_found_errors(client: TestClient) -> None:
+    token = _register(client, "carol", "carol@example.com").json()["access_token"]
+    headers = _auth_header(token)
+
+    invalid = client.post(
+        "/api/notes",
+        headers=headers,
+        json={"title": "", "content": "x"},
+    )
+    assert invalid.status_code == 422
+
+    missing = client.get("/api/notes/999", headers=headers)
     assert missing.status_code == 404
 
 
-def test_create_note_validation_error(client: TestClient) -> None:
-    user_id = client.post(
-        "/api/users",
-        json={"username": "carol", "email": "carol@example.com"},
+def test_rbac_user_cannot_list_all_users(client: TestClient) -> None:
+    token = _register(client, "dave", "dave@example.com").json()["access_token"]
+    response = client.get("/api/users", headers=_auth_header(token))
+    assert response.status_code == 403
+    assert response.json()["detail"] == "Admin role required"
+
+
+def test_rbac_cannot_delete_another_users_note(client: TestClient) -> None:
+    owner_token = _register(client, "owner1", "owner1@example.com").json()["access_token"]
+    other_token = _register(client, "other1", "other1@example.com").json()["access_token"]
+
+    note_id = client.post(
+        "/api/notes",
+        headers=_auth_header(owner_token),
+        json={"title": "Private", "content": "Only mine"},
     ).json()["id"]
 
-    response = client.post(
-        "/api/notes",
-        json={"title": "", "content": "x", "owner_id": user_id},
+    forbidden = client.delete(
+        f"/api/notes/{note_id}",
+        headers=_auth_header(other_token),
     )
-    assert response.status_code == 422
+    assert forbidden.status_code == 403
 
 
-def test_create_note_missing_owner(client: TestClient) -> None:
-    response = client.post(
-        "/api/notes",
-        json={"title": "Orphan", "content": "No owner", "owner_id": 999},
+def test_integration_happy_path_auth_crud(client: TestClient) -> None:
+    """End-to-end happy path: register → login → CRUD → me."""
+    register = _register(client, "erin", "erin@example.com", password="happy123")
+    assert register.status_code == 201
+
+    login = client.post(
+        "/api/auth/login",
+        json={"username": "erin", "password": "happy123"},
     )
-    assert response.status_code == 404
-    assert response.json()["detail"] == "Owner user not found"
+    assert login.status_code == 200
+    token = login.json()["access_token"]
+    headers = _auth_header(token)
+
+    me = client.get("/api/auth/me", headers=headers)
+    assert me.status_code == 200
+    assert me.json()["username"] == "erin"
+
+    created = client.post(
+        "/api/notes",
+        headers=headers,
+        json={"title": "Ship it", "content": "Integration path works"},
+    )
+    assert created.status_code == 201
+    note_id = created.json()["id"]
+
+    fetched = client.get(f"/api/notes/{note_id}", headers=headers)
+    assert fetched.status_code == 200
+    assert fetched.json()["content"] == "Integration path works"
+
+    client.put(
+        f"/api/notes/{note_id}",
+        headers=headers,
+        json={"content": "Updated on happy path"},
+    )
+    listed = client.get("/api/notes", headers=headers)
+    assert listed.status_code == 200
+    assert listed.json()[0]["content"] == "Updated on happy path"
+
+    assert client.delete(f"/api/notes/{note_id}", headers=headers).status_code == 204
 
 
-def test_duplicate_user_conflict(client: TestClient) -> None:
-    payload = {"username": "dave", "email": "dave@example.com"}
-    assert client.post("/api/users", json=payload).status_code == 201
-    conflict = client.post("/api/users", json=payload)
-    assert conflict.status_code == 409
+def test_research_agent_uses_memory(client: TestClient) -> None:
+    token = _register(client, "frank", "frank@example.com").json()["access_token"]
+    headers = _auth_header(token)
+    session_id = "test-session"
+
+    remember = client.post(
+        "/api/agent/memory",
+        headers=headers,
+        json={
+            "session_id": session_id,
+            "fact": "The user's favorite topic is renewable energy",
+        },
+    )
+    assert remember.status_code == 200
+    assert any("renewable energy" in fact for fact in remember.json()["facts"])
+
+    first = client.post(
+        "/api/agent/research",
+        headers=headers,
+        json={"query": "solar panel efficiency", "session_id": session_id},
+    )
+    assert first.status_code == 200
+    body = first.json()
+    assert body["plan"]
+    assert body["sources"]
+    assert any("renewable energy" in fact for fact in body["memory_used"])
+
+    second = client.post(
+        "/api/agent/research",
+        headers=headers,
+        json={"query": "battery storage trends", "session_id": session_id},
+    )
+    assert second.status_code == 200
+    assert any("solar panel efficiency" in fact for fact in second.json()["memory_used"])

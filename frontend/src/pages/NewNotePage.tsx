@@ -4,19 +4,18 @@ import { useNotes } from '../context/NotesContext'
 
 export function NewNotePage() {
   const navigate = useNavigate()
-  const { users, addNote, error } = useNotes()
+  const { addNote, error } = useNotes()
 
   return (
     <section className="narrow">
       <p className="eyebrow">Create</p>
       <h1>New note</h1>
       <p className="lede">
-        Client-side validation runs before the request hits the API. Invalid fields never leave the
-        browser.
+        Ownership comes from your JWT — no owner picker needed. Client-side validation still runs
+        first.
       </p>
       {error ? <p className="banner error">{error}</p> : null}
       <NoteForm
-        users={users}
         onSubmit={async (values) => {
           await addNote(values)
           navigate('/notes')

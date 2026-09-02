@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useNotes } from '../context/NotesContext'
 
 export function NotesPage() {
-  const { notes, users, loading, error, removeNote, refresh } = useNotes()
+  const { notes, loading, error, removeNote, refresh } = useNotes()
 
   return (
     <section>
@@ -10,7 +10,7 @@ export function NotesPage() {
         <div>
           <p className="eyebrow">Notes</p>
           <h1>Your notes</h1>
-          <p className="lede">Fetched from the FastAPI CRUD backend.</p>
+          <p className="lede">Authenticated CRUD against the FastAPI backend.</p>
         </div>
         <div className="cta-row">
           <button type="button" className="button ghost" onClick={() => void refresh()}>
@@ -30,28 +30,22 @@ export function NotesPage() {
       ) : null}
 
       <ul className="note-list">
-        {notes.map((note) => {
-          const owner = users.find((user) => user.id === note.owner_id)
-          return (
-            <li key={note.id} className="note-card">
-              <div>
-                <h2>{note.title}</h2>
-                <p>{note.content}</p>
-                <p className="meta">
-                  Owner: {owner?.username ?? `user #${note.owner_id}`} · Updated{' '}
-                  {new Date(note.updated_at).toLocaleString()}
-                </p>
-              </div>
-              <button
-                type="button"
-                className="button danger"
-                onClick={() => void removeNote(note.id)}
-              >
-                Delete
-              </button>
-            </li>
-          )
-        })}
+        {notes.map((note) => (
+          <li key={note.id} className="note-card">
+            <div>
+              <h2>{note.title}</h2>
+              <p>{note.content}</p>
+              <p className="meta">Updated {new Date(note.updated_at).toLocaleString()}</p>
+            </div>
+            <button
+              type="button"
+              className="button danger"
+              onClick={() => void removeNote(note.id)}
+            >
+              Delete
+            </button>
+          </li>
+        ))}
       </ul>
     </section>
   )

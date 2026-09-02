@@ -29,3 +29,15 @@ Log of significant prompts used while building NotesLab.
 - **Prompt:** Run frontend lint/tests and backend ruff/pytest; fix any failures so the checklist commits cleanly.
 - **Pattern used:** Verify-then-fix loop with AI-assisted test review.
 - **Outcome:** Frontend — ESLint/Prettier clean, 5 Vitest tests passing, production build OK. Backend — ruff clean, 5 pytest tests passing. Committed a clean lint/test pass.
+
+## Week 3 — Auth, authorization, API tests & integration
+
+- **Prompt:** Complete Week 3: add JWT auth, one RBAC rule, connect frontend login + authenticated CRUD, write 5+ API tests and 1 integration happy-path test, update prompts.md.
+- **Pattern used:** Context from syllabus + step-by-step (security helpers → protected routers → frontend auth → tests).
+- **Outcome:** `/api/auth/*`, Bearer-protected notes, admin-only `/api/users`, login UI, pytest coverage for auth/CRUD/RBAC/errors + integration path.
+
+## Week 4 — Agent concepts (SerpAPI)
+
+- **Prompt:** Complete Week 4 using SerpAPI: build a research agent with web-search skill and session memory that recalls earlier facts.
+- **Pattern used:** Agent architecture decomposition (planner → SerpAPI executor → memory write/recall) with offline demo fallback when no API key.
+- **Outcome:** `SerpApiSearchSkill`, in-process `MemoryStore`, `/api/agent/research` + memory endpoints, `/research` page, agent memory test.
