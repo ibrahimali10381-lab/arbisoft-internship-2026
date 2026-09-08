@@ -84,3 +84,40 @@ class AgentRememberRequest(BaseModel):
     session_id: str = Field(min_length=1, max_length=100)
     fact: str = Field(min_length=2, max_length=500)
     kind: Literal["fact", "preference", "entity"] = "fact"
+
+
+class SupervisorRequest(BaseModel):
+    query: str = Field(min_length=2, max_length=500)
+    session_id: str = Field(default="default", min_length=1, max_length=100)
+    file_path: str | None = Field(default=None, max_length=200)
+
+
+class WorkerHandoff(BaseModel):
+    worker: str
+    summary: str
+    details: dict
+
+
+class SupervisorResponse(BaseModel):
+    query: str
+    route: list[str]
+    answer: str
+    handoffs: list[WorkerHandoff]
+    traces: list[dict]
+
+
+class MultiHopRequest(BaseModel):
+    question: str = Field(min_length=2, max_length=500)
+    session_id: str = Field(default="multi-hop", min_length=1, max_length=100)
+
+
+class MultiHopResponse(BaseModel):
+    question: str
+    steps: list[str]
+    answer: str
+    session_id: str
+    traces: list[dict]
+
+
+class TraceListResponse(BaseModel):
+    events: list[dict]

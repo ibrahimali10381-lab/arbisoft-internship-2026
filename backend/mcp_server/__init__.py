@@ -1,0 +1,1 @@
+"""NotesLab MCP package."""

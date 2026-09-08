@@ -223,3 +223,76 @@ def test_research_agent_uses_memory(client: TestClient, monkeypatch: pytest.Monk
     )
     assert second.status_code == 200
     assert any("solar panel efficiency" in fact for fact in second.json()["memory_used"])
+
+
+def test_supervisor_routes_to_multiple_workers(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("SERPAPI_API_KEY", raising=False)
+    from app.agent.tracing import trace_store
+
+    trace_store.clear()
+    token = _register(client, "gina", "gina@example.com").json()["access_token"]
+    headers = _auth_header(token)
+
+    client.post(
+        "/api/notes",
+        headers=headers,
+        json={"title": "MCP notes", "content": "Remember to wire the search tool"},
+    )
+
+    response = client.post(
+        "/api/orchestration/supervise",
+        headers=headers,
+        json={
+            "query": "search notes about MCP and research latest MCP news",
+            "session_id": "orch-test",
+            "file_path": "internship-brief.txt",
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["route"]) >= 2
+    assert len(body["handoffs"]) >= 2
+    assert body["traces"]
+    assert any(event["phase"] == "pre" for event in body["traces"])
+    assert any(event["phase"] == "post" for event in body["traces"])
+
+
+def test_multi_hop_and_file_plugin(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("SERPAPI_API_KEY", raising=False)
+    token = _register(client, "hank", "hank@example.com").json()["access_token"]
+    headers = _auth_header(token)
+
+    response = client.post(
+        "/api/orchestration/multi-hop",
+        headers=headers,
+        json={
+            "question": "What should Phase 3 focus on for NotesLab?",
+            "session_id": "multi-test",
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert "file-read" in " ".join(body["steps"]).lower() or any(
+        "brief" in step.lower() for step in body["steps"]
+    )
+    assert body["answer"]
+    assert body["traces"]
+
+
+def test_trace_listing(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("SERPAPI_API_KEY", raising=False)
+    from app.agent.tracing import trace_store
+
+    trace_store.clear()
+    token = _register(client, "ivy", "ivy@example.com").json()["access_token"]
+    headers = _auth_header(token)
+    client.post(
+        "/api/orchestration/multi-hop",
+        headers=headers,
+        json={"question": "summarize internship brief goals", "session_id": "trace-test"},
+    )
+    traces = client.get("/api/orchestration/traces", headers=headers)
+    assert traces.status_code == 200
+    assert len(traces.json()["events"]) >= 2

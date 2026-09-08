@@ -155,3 +155,53 @@ export function rememberFact(sessionId: string, fact: string) {
     body: JSON.stringify({ session_id: sessionId, fact }),
   })
 }
+
+export type TraceEvent = {
+  id: string
+  timestamp: string
+  agent: string
+  tool: string
+  phase: string
+  arguments: Record<string, unknown>
+  result_preview?: string | null
+  error?: string | null
+  duration_ms?: number | null
+}
+
+export type SupervisorResponse = {
+  query: string
+  route: string[]
+  answer: string
+  handoffs: Array<{ worker: string; summary: string; details: Record<string, unknown> }>
+  traces: TraceEvent[]
+}
+
+export type MultiHopResponse = {
+  question: string
+  steps: string[]
+  answer: string
+  session_id: string
+  traces: TraceEvent[]
+}
+
+export function runSupervisor(query: string, sessionId: string, filePath?: string) {
+  return request<SupervisorResponse>('/api/orchestration/supervise', {
+    method: 'POST',
+    body: JSON.stringify({
+      query,
+      session_id: sessionId,
+      file_path: filePath ?? null,
+    }),
+  })
+}
+
+export function runMultiHop(question: string, sessionId: string) {
+  return request<MultiHopResponse>('/api/orchestration/multi-hop', {
+    method: 'POST',
+    body: JSON.stringify({ question, session_id: sessionId }),
+  })
+}
+
+export function listTraces() {
+  return request<{ events: TraceEvent[] }>('/api/orchestration/traces')
+}

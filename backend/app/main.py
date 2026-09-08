@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, SessionLocal, engine
 from app.models import User
-from app.routers import agent, auth, notes, users
+from app.routers import agent, auth, notes, orchestration, users
 from app.security import hash_password
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
@@ -63,6 +63,7 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(notes.router, prefix="/api")
 app.include_router(agent.router, prefix="/api")
+app.include_router(orchestration.router, prefix="/api")
 
 
 @app.get("/health")

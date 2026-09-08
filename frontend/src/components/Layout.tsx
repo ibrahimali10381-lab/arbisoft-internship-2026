@@ -23,6 +23,7 @@ export function Layout() {
               <NavLink to="/notes">Notes</NavLink>
               <NavLink to="/notes/new">New Note</NavLink>
               <NavLink to="/research">Research</NavLink>
+              <NavLink to="/agents">Agents</NavLink>
               <button type="button" className="button ghost nav-button" onClick={logout}>
                 Log out ({user.username})
               </button>

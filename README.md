@@ -1,11 +1,11 @@
 # Arbisoft Internship 2026 — NotesLab
 
-Full-stack notes app covering Weeks 1–4 of the AI-Focused Internship Program.
+Full-stack notes app covering Weeks 1–5 of the AI-Focused Internship Program.
 
 ## Stack
 
 - **Frontend:** React + Vite + TypeScript, React Router, ESLint, Prettier, Vitest
-- **Backend:** FastAPI + SQLAlchemy + JWT auth + SerpAPI research agent, ruff, pytest
+- **Backend:** FastAPI + SQLAlchemy + JWT auth + SerpAPI agents + MCP server, ruff, pytest
 
 ## Quick start
 
@@ -15,7 +15,6 @@ Full-stack notes app covering Weeks 1–4 of the AI-Focused Internship Program.
 cd backend
 source .venv/bin/activate
 cp .env.example .env   # set SERPAPI_API_KEY for live search
-# optional: export $(grep -v '^#' .env | xargs)
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -23,8 +22,6 @@ Seeded users:
 
 - `demo` / `demopass` (role: user)
 - `admin` / `adminpass` (role: admin)
-
-Without `SERPAPI_API_KEY`, the research agent still runs using a demo search fallback.
 
 ### Frontend
 
@@ -36,25 +33,33 @@ npm run dev
 
 App: http://127.0.0.1:5173 · API docs: http://127.0.0.1:8000/docs
 
+### MCP server + custom client
+
+```bash
+cd backend
+source .venv/bin/activate
+python -m mcp_server.client
+```
+
+Cursor connection steps: `backend/mcp_server/README.md`
+
 ## Checklist coverage
 
-### Weeks 1–2
-
-SPA routes, validated forms, notes CRUD API, ORM relationship, lint + tests, `prompts.md`.
-
-### Week 3
-
-- [x] JWT authentication (`/api/auth/register`, `/login`, `/me`)
-- [x] RBAC (admin-only user list; owners/admins manage notes)
-- [x] Frontend login + authenticated end-to-end CRUD
-- [x] 5+ API tests for auth/CRUD/errors + 1 integration happy-path test
-- [x] `prompts.md` updated
+### Weeks 1–3
+SPA, CRUD API, JWT/RBAC, tests, `prompts.md`.
 
 ### Week 4
+- [x] SerpAPI research agent + session memory
+- [x] Hook logging every tool call with timestamps
+- [x] File-read plugin (`.txt` / `.pdf` under `sample_docs/`)
+- [x] Multi-hop demo (file → memory → web)
 
-- [x] Research agent with SerpAPI web-search skill
-- [x] Session memory that recalls earlier facts
-- [x] `/research` UI wired to the agent API
+### Week 5
+- [x] Custom MCP server (`noteslab://app/overview` resource + `search_notes` tool)
+- [x] Custom MCP client (+ Cursor config docs)
+- [x] Supervisor + ≥2 workers (research / notes / file)
+- [x] Tracing layer across the agent graph (`/api/orchestration/traces`, Agents UI)
+- [x] Phase 3 project proposal: `docs/PHASE3_PROPOSAL.md`
 
 ## Useful commands
 

@@ -1,0 +1,14 @@
+NotesLab Internship Brief
+=========================
+
+Project: NotesLab — full-stack notes app with JWT auth and an agentic research layer.
+
+Phase focus:
+- Week 3: authentication, RBAC, API/integration tests
+- Week 4: SerpAPI research agent, session memory, hooks, file plugins
+- Week 5: MCP server, supervisor + worker orchestration, tracing
+
+Mentor notes:
+- Prefer small verifiable steps.
+- Keep prompts.md updated.
+- Do not commit secrets (.env / API keys).

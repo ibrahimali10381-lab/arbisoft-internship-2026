@@ -31,13 +31,11 @@ class SerpApiSearchSkill:
         self._api_key_override = api_key
 
     def _resolve_api_key(self) -> str:
-        # Reload .env so key updates apply without a full process restart.
-        load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=True)
         if self._api_key_override is not None:
             return self._api_key_override.strip()
         return (os.getenv("SERPAPI_API_KEY") or "").strip()
 
-    def run(self, query: str, *, num: int = 5) -> list[SearchHit]:
+    def run(self, query: str, *, num: int = 10) -> list[SearchHit]:
         api_key = self._resolve_api_key()
         if not api_key:
             # Deterministic offline fallback so local demos/tests still work.
