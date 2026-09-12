@@ -107,6 +107,4 @@ No Google Docs, Notion, email, or note apps.
 | **Originality** | Focused claim verifier, not a ChatGPT clone or todo/notes tutorial |
 | **Scope** | Single claim in → verdict out; intentionally narrow |
 
-## Ask
 
-Please approve **ClaimCheck** as my Phase 3 project. Preferred start: Milestone W1 (submit UI + structured verdict schema). I will iterate within 48 hours if you want a different domain (still non-notes).
