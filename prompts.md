@@ -101,3 +101,6 @@ Log of significant prompts used while building NotesLab with Cursor.
   - `prompts.md` updated
 
 - **Prompt correction note:** First tracing implementation tried `dataclasses.asdict` on events that still referenced SQLAlchemy sessions → `TypeError`. Fixed by sanitizing hook arguments and manual trace serialization.
+
+- **Prompt:** “diffrent proposal” / “nothing to do with notes”
+- **Outcome:** Replaced NotesLab/PulseBrief drafts with **ClaimCheck** — an agentic claim verifier (SerpAPI evidence + supervisor/workers + traces). No notes/journal product.
