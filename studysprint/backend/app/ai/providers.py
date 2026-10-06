@@ -257,7 +257,8 @@ class LocalProvider:
             feedback = f"Partially correct. Review the material{where}; you missed: "
             feedback += ", ".join(missing) + "."
         else:
-            feedback = f"This doesn't match the material yet. Re-read{where} and try again."
+            source = f"page {page}" if page else "the material"
+            feedback = f"This doesn't match the material yet. Re-read {source} and try again."
         return {"score": score, "feedback": feedback, "missing_points": missing}
 
     def _answer_question(self, payload: dict[str, Any]) -> dict:

@@ -1,0 +1,129 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R] /Count 5 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 498 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(The OSI Model) Tj T*
+() Tj T*
+(The OSI model is a seven layer framework that describes how data moves across a network.) Tj T*
+(The physical layer sends raw bits over a cable or radio link. The network layer chooses) Tj T*
+(a path for packets between different networks. The transport layer provides end to end) Tj T*
+(delivery between applications on two hosts. Encapsulation means each layer wraps the) Tj T*
+(data from the layer above with its own header.) Tj T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 487 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(TCP and UDP) Tj T*
+() Tj T*
+(TCP is a connection oriented protocol that guarantees reliable, ordered delivery of) Tj T*
+(data. Before sending data, TCP performs a three way handshake using SYN, SYN-ACK and ACK) Tj T*
+(segments. UDP is a connectionless protocol that sends datagrams without guaranteeing) Tj T*
+(delivery or order. Video calls and online games often use UDP because low latency) Tj T*
+(matters more than retransmitting lost packets.) Tj T*
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 409 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(IP Addressing and Subnets) Tj T*
+() Tj T*
+(An IP address is a numeric label that identifies a device on a network. IPv4 addresses) Tj T*
+(are 32 bits long, while IPv6 addresses are 128 bits long. A subnet mask separates the) Tj T*
+(network portion of an address from the host portion. NAT lets many devices on a private) Tj T*
+(network share a single public IP address.) Tj T*
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 410 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(DNS Resolution) Tj T*
+() Tj T*
+(DNS is a distributed system that translates domain names into IP addresses. A recursive) Tj T*
+(resolver queries root servers, then top level domain servers, then the authoritative) Tj T*
+(name server for the domain. Resolvers cache answers for the time set by the TTL value,) Tj T*
+(which reduces lookup latency and load on name servers.) Tj T*
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 455 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(Routing) Tj T*
+() Tj T*
+(A router is a device that forwards packets between networks using a routing table.) Tj T*
+(Distance vector protocols share routing tables with neighbours, while link state) Tj T*
+(protocols flood information about links so every router can compute shortest paths.) Tj T*
+(Dijkstra's algorithm computes the shortest path from one router to every other router in) Tj T*
+(a link state network.) Tj T*
+ET
+endstream
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000141 00000 n 
+0000000211 00000 n 
+0000000337 00000 n 
+0000000886 00000 n 
+0000001012 00000 n 
+0000001550 00000 n 
+0000001676 00000 n 
+0000002136 00000 n 
+0000002264 00000 n 
+0000002726 00000 n 
+0000002854 00000 n 
+trailer
+<< /Size 14 /Root 1 0 R >>
+startxref
+3361
+%%EOF
