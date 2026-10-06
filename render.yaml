@@ -1,0 +1,21 @@
+# Render Blueprint: New > Blueprint > select this repo. Deploys studysprint/Dockerfile.
+services:
+  - type: web
+    name: studysprint
+    runtime: docker
+    rootDir: studysprint
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:////tmp/studysprint.db
+      - key: MODEL_PRIORITY
+        value: openai,groq,local-keyword
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false

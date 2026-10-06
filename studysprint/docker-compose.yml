@@ -1,0 +1,26 @@
+services:
+  studysprint:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-please-32b}
+      MODEL_PRIORITY: ${MODEL_PRIORITY:-openai,groq,ollama,local-keyword}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
+    volumes:
+      - studysprint-data:/data
+    restart: unless-stopped
+
+  # Optional local LLM: `docker compose --profile ollama up`, then set
+  # OLLAMA_BASE_URL=http://ollama:11434/v1 and pull a model inside the container.
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    volumes:
+      - ollama-models:/root/.ollama
+
+volumes:
+  studysprint-data:
+  ollama-models:
