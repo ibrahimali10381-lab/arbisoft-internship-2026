@@ -1,0 +1,110 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 503 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(Processes and Threads) Tj T*
+() Tj T*
+(A process is a program in execution with its own address space, registers and open) Tj T*
+(files. A thread is the smallest unit of execution that the scheduler can run inside a) Tj T*
+(process. Threads of the same process share memory and open files, which makes) Tj T*
+(communication cheap but requires synchronization. A context switch saves the state of) Tj T*
+(the running process and restores the state of the next one.) Tj T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 472 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(CPU Scheduling) Tj T*
+() Tj T*
+(The scheduler decides which ready process runs next on the CPU. Round robin gives each) Tj T*
+(process a fixed time quantum and moves it to the back of the ready queue when the) Tj T*
+(quantum expires. Shortest job first minimizes average waiting time but can starve long) Tj T*
+(jobs. Starvation is a situation where a process waits indefinitely because other) Tj T*
+(processes are always preferred.) Tj T*
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 561 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(Virtual Memory and Paging) Tj T*
+() Tj T*
+(Virtual memory is a technique that gives each process the illusion of a large, private) Tj T*
+(address space. Paging divides memory into fixed-size pages and frames, and the page) Tj T*
+(table maps virtual pages to physical frames. A page fault occurs when a process accesses) Tj T*
+(a page that is not in physical memory, so the operating system loads it from disk.) Tj T*
+(Thrashing happens when the system spends more time handling page faults than running) Tj T*
+(processes.) Tj T*
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 526 >>
+stream
+BT
+/F1 11 Tf
+15 TL
+56 740 Td
+(Deadlocks) Tj T*
+() Tj T*
+(A deadlock is a state where a set of processes are each waiting for a resource held by) Tj T*
+(another process in the set. Four conditions must hold for deadlock: mutual exclusion,) Tj T*
+(hold and wait, no preemption and circular wait. Deadlock prevention breaks at least one) Tj T*
+(of these conditions, for example by ordering resource requests. The banker's algorithm) Tj T*
+(avoids deadlock by only granting requests that keep the system in a safe state.) Tj T*
+ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000134 00000 n 
+0000000204 00000 n 
+0000000330 00000 n 
+0000000884 00000 n 
+0000001010 00000 n 
+0000001533 00000 n 
+0000001659 00000 n 
+0000002271 00000 n 
+0000002399 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+2977
+%%EOF
