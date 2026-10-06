@@ -102,5 +102,61 @@ Log of significant prompts used while building NotesLab with Cursor.
 
 - **Prompt correction note:** First tracing implementation tried `dataclasses.asdict` on events that still referenced SQLAlchemy sessions → `TypeError`. Fixed by sanitizing hook arguments and manual trace serialization.
 
-- **Prompt:** “diffrent proposal” / “nothing to do with notes”
-- **Outcome:** Replaced NotesLab/PulseBrief drafts with **ClaimCheck** — an agentic claim verifier (SerpAPI evidence + supervisor/workers + traces). No notes/journal product.
+- **Prompt:** “Update the Phase 3 proposal to match the mentor gate slide (problem, users, AI features, stack, data sources, ~3.5-week milestones, risks).”
+- **Outcome:** First draft was a NotesLab upgrade (research desk + Chroma). Mentor-facing rewrite still pending originality.
+
+- **Prompt:** “The proposal should be about something new that hasn’t been done but still in scope.”
+- **Why:** NotesLab already covers notes CRUD, SerpAPI research, supervisor/workers, MCP, and tracing — Phase 3 cannot just polish that.
+- **Outcome:** First rewrite was **BlockerRelay** (incident playbooks). User asked to change it.
+
+- **Prompt:** “change”
+- **Outcome:** Replaced the proposal with **DraftHours** (mentor-gated Q&A queue). User asked to change it again.
+
+- **Prompt:** “change” → picked **StudySprint** from five options.
+- **Correction applied:** After two rejected ideas, stopped guessing and asked the user to choose a domain.
+- **Outcome:** Proposal is now **StudySprint**: upload course PDFs → agents extract topics and generate page-cited questions → grader scores free-text answers against the source → scheduler prioritizes weak topics until the exam date.
+
+## Phase 3 — StudySprint build (Week 5b scaffold, Week 6 core, Week 7 polish)
+
+- **Prompt:** "Complete the app" (with the Week 5b / 6 / 7 syllabus screenshot).
+- **Pattern used:** Proposal → scaffold → vertical slices, each tested before moving on.
+  - Slice order: auth → ingest → topics → questions → grading → scheduler → agent → RAG → compare → Docker.
+- **Scaffold prompts:**
+  - "Scaffold a FastAPI + SQLAlchemy backend for StudySprint with User, Course, Document, Chunk, Topic, Question and Attempt models, JWT auth, and an `app/ai` package containing a tool registry, an agent runner and a model client."
+  - "Write a model router that tries providers in priority order, validates JSON output with Pydantic, retries once with the validation error, falls back to the next model, and caches results."
+  - "Add an OpenAI-compatible provider usable for OpenAI, Groq and Ollama, plus an offline local provider so the app and tests run with no API keys."
+- **Core feature prompts:**
+  - "Extract text per page with pypdf, chunk it, and extract topics. Every topic and question must cite a real page."
+  - "Grade a free-text answer against reference_answer and key_points. Return score 0–5, feedback and missing_points. Update topic mastery with 60/40 blending."
+  - "Build a scheduler that ranks never-practiced, then weak, then stale topics, and plans each day until the exam, with a final review day."
+  - "Add a supervisor that routes a student goal (prepare / quiz / plan / ask) to curriculum, quiz, session, planner and tutor workers, all through the traced tool registry."
+- **Week 7 prompts:**
+  - "Add a RAG ask endpoint with page citations."
+  - "Add /ai/compare to run the same request across 2+ models with latency."
+  - "Add guards for invented page numbers and inconsistent grades."
+  - "Export the OpenAPI spec, add a single-container Dockerfile and docker-compose, and write a README with an architecture diagram."
+- **Test prompts:**
+  - "Write unit tests for the scheduler, router (retry, fallback, guard, cache, compare) and providers with mocked HTTP."
+  - "Write end-to-end HTTP tests of upload → questions → session → grade → mastery → plan → ask, and every agent intent. Target ≥70% coverage."
+- **Corrections applied:**
+  - Question generation pulled passages from other pages, so a Deadlocks question cited page 3. The e2e test caught it; generation now prefers the topic's own page.
+  - The stemmer split "process"/"processes" into two different key points. Fixed by not stripping "s" from words ending in "ss".
+  - Generated questions read "What is thread?" because the regex dropped the article. Fixed by keeping it ("What is a thread?").
+  - Frontend tests failed on Node 26: its own `localStorage` global shadows jsdom's and is undefined without a storage file. Fixed with an in-memory Storage shim in the test setup.
+- **Outcome:**
+  - `studysprint/` app: 40 backend tests at 96% coverage, 8 frontend tests, lint clean.
+  - Verified in the browser: login → course → graded session → model comparison.
+
+## Week 8 — Finalization, documentation & presentation
+
+- **Prompt:** Week 8 syllabus screenshot (code freeze, README, prompts.md, presentation, demo video, reflection).
+- **Pattern used:** Freeze features → stability fixes only → docs → split history into meaningful commits.
+- **Prompts:**
+  - "Fix stability issues only. No new features."
+    - Outcome: the course delete action now shows an error instead of failing silently.
+  - "Add a Render blueprint so the Docker image deploys from GitHub with one click."
+  - "Write a 5-minute demo video script with timestamps covering the AI features."
+  - "Expand the slide outline into a 20-minute talk: problem → solution → demo → learnings."
+  - "Write a reflection: what AI did well, where it failed (with real examples from this repo), lessons learned."
+- **Correction applied:** The AI's first README draft implied the Docker image had been verified. I changed it to say Docker was not available locally, and kept every verification claim to things that actually ran.
+- **Outcome:** `render.yaml`, `docs/DEMO_VIDEO.md`, `docs/SLIDES.md` (20 min), `docs/REFLECTION.md`, README AI-feature table and deploy guide.
