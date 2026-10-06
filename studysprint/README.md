@@ -44,7 +44,7 @@ The image builds the React app and serves it from FastAPI, so one container is t
 
 On the free tier, SQLite lives in `/tmp`, so data resets on redeploy. The demo course is re-seeded on every boot.
 
-**Deployed URL:** _add after deploying_ · **Demo video:** _add the Google Drive link_
+**Deployed URL:** https://studysprint-6ufj.onrender.com · **Demo video:** _add the Google Drive link_
 
 ## Architecture
 
